@@ -6,34 +6,43 @@ internal class Program
         // Initialise les couleurs de la console
         Console.BackgroundColor = ConsoleColor.Black;
         Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.WriteLine("Hello, World!");
+        Console.WriteLine("Hello World!");
 
-        bool? boolQuestionResult = AskUserBool("Cette question est-elle jolie ?").Value;
-        if (null == boolQuestionResult)
-            Console.WriteLine("woops !");
+        #region bool
+        bool? boolQuestionResult = AskUserBool("Cette question est-elle jolie ?")!.Value;
+        if (boolQuestionResult.Value)
+            Console.WriteLine("Merci ! <3");
         else
-        {
-            if (boolQuestionResult.Value)
-                Console.WriteLine("Merci ! <3");
-            else
-                Console.WriteLine(":c");
-        }
+            Console.WriteLine(":c");
+        Pause(true);
+        #endregion
 
-        string stringQuestionResult = AskUserString("Quel est ton mot favoris ?");
+        #region char
+        char? charQuestionResult = AskUserChar("Par quelle lettre ton prénom commence-t-il ?").Value;
+        Console.WriteLine($"Ton prénom commence par la lettre {charQuestionResult}, super !");
+        Pause(true);
+        #endregion
+
+        #region string
+        string? stringQuestionResult = AskUserString("Quel est ton mot favoris ?");
         if (string.IsNullOrEmpty(stringQuestionResult))
             Console.WriteLine("woops !");
         else
             Console.WriteLine($"Super, ton mot favoris est {stringQuestionResult} !");
+        Pause(true);
+        #endregion
 
+        #region integer
         int? integerQuestionResult = AskUserInteger("Quel est ton nombre favoris ?");
         if (null == integerQuestionResult)
             Console.WriteLine("woops !");
         else
             Console.WriteLine($"Super, ton nombre favoris est {integerQuestionResult} !");
+        Pause(true);
+        #endregion
 
         // Réinitialisation des paramètres de la console pour la suite du code
         Console.ResetColor();
-        Console.ReadKey(true);
     }
 
     /// <summary>
@@ -76,8 +85,35 @@ internal class Program
             PrintError(e);
         }
 
-        if (defaultResult.Value)
+        if (defaultResult != null && defaultResult.Value)
             return defaultResult;
+        return null;
+    }
+
+    public static char? AskUserChar(string question, char? defaultResult = null)
+    {
+        try
+        {
+            Console.WriteLine(question);
+
+            // Gestion de la chaîne de caractères pour afficher la valeur par défaut si elle existe
+            string defaultResultInfo = (null == defaultResult) ? "" : $"[{defaultResult}]";
+
+            Console.Write($"{defaultResultInfo} > ");
+            ConsoleKeyInfo input = Console.ReadKey();
+            Console.WriteLine();
+
+            // Récupération du caractère entré
+            char key = input.KeyChar;
+
+            // Si le caractère n'est pas un retour à la ligne, une tabulation ou un nombre, renvoie le résultat - sinon, repose la question
+            return (key != '\r' && key != '\n' && key != '\t' && !int.TryParse(key.ToString(), out int result)) ? key : AskUserChar(question, defaultResult);
+        }
+        catch (Exception e)
+        {
+            PrintError(e);
+        }
+
         return null;
     }
 
@@ -87,7 +123,7 @@ internal class Program
     /// <param name="question">Question</param>
     /// <param name="defaultResult">Résultat par défaut</param>
     /// <returns>Réponse</returns>
-    public static string AskUserString(string question, string defaultResult = "")
+    public static string? AskUserString(string question, string? defaultResult = "")
     {
         try
         {
@@ -97,7 +133,7 @@ internal class Program
             string defaultResultInfo = (string.IsNullOrEmpty(defaultResult)) ? $"[{defaultResult}]" : "";
 
             Console.Write($"{defaultResultInfo} > ");
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             Console.WriteLine();
 
             // Si la chaîne est vide, renvoie le résultat par défaut ou repose la question
@@ -130,12 +166,12 @@ internal class Program
             string defaultResultInfo = (null == defaultResult) ? "" : $"[{defaultResult}]";
 
             Console.Write($"{defaultResultInfo} > ");
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             Console.WriteLine();
 
             // Si la chaîne est vide, renvoie le résultat par défaut ou repose la question
             if (string.IsNullOrEmpty(input))
-                return defaultResult.HasValue ? defaultResult.Value : AskUserInteger(question, defaultResult);
+                return defaultResult ?? AskUserInteger(question, defaultResult);
 
             // Si la chaîne n'est pas un nombre, repose la question
             if (!int.TryParse(input, out int result))
@@ -161,5 +197,16 @@ internal class Program
         Console.WriteLine(e.GetType().FullName);
         Console.WriteLine("Une exception a été levée au cours du traitement : " + e.Message);
         Console.ResetColor();
+    }
+
+    /// <summary>
+    /// Effectue une pause et vide la console
+    /// </summary>
+    public static void Pause(bool doClear = false)
+    {
+        Console.WriteLine("...");
+        Console.ReadKey(true);
+        if (doClear)
+            Console.Clear();
     }
 }
