@@ -106,8 +106,8 @@ internal class Program
             // Récupération du caractère entré
             char key = input.KeyChar;
 
-            // Si le caractère n'est pas un retour à la ligne, une tabulation ou un nombre, renvoie le résultat - sinon, repose la question
-            return (key != '\r' && key != '\n' && key != '\t' && !int.TryParse(key.ToString(), out int result)) ? key : AskUserChar(question, defaultResult);
+            // Si le caractère n'est pas un retour à la ligne ou une tabulation, renvoie le résultat - sinon, repose la question
+            return (key != '\r' && key != '\n' && key != '\t') ? key : AskUserChar(question, defaultResult);
         }
         catch (Exception e)
         {
