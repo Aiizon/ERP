@@ -6,45 +6,40 @@ internal class Program
         // Initialise la logique de contrôle
         GameControl consoleControl = new ConsoleControl();
 
-        // Initialise les couleurs de la console
-        Console.BackgroundColor = ConsoleColor.Black;
-        Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.WriteLine("Hello World!");
-
+        // Questions de test
         #region bool
-        bool? boolQuestionResult = consoleControl.AskUserBool("Cette question est-elle jolie ?")!.Value;
+        bool? boolQuestionResult = consoleControl.AskUserBool("bool test")!.Value;
+        if (null == boolQuestionResult)
+            consoleControl.DisplayDebug("bool test", ["uh oh, erreur !"]);
         if (boolQuestionResult.Value)
-            Console.WriteLine("Merci ! <3");
+            consoleControl.DisplayLog("bool test", ["oui"]);
         else
-            Console.WriteLine(":c");
+            consoleControl.DisplayLog("bool test", ["non"]);
         ConsoleControl.Pause(true);
         #endregion
 
         #region char
-        char? charQuestionResult = consoleControl.AskUserChar("Par quelle lettre ton prénom commence-t-il ?").Value;
-        Console.WriteLine($"Ton prénom commence par la lettre {charQuestionResult}, super !");
+        char? charQuestionResult = consoleControl.AskUserChar("char test").Value;
+        consoleControl.DisplayLog("char test", [charQuestionResult.ToString()]);
         ConsoleControl.Pause(true);
         #endregion
 
         #region string
-        string? stringQuestionResult = consoleControl.AskUserString("Quel est ton mot favoris ?");
+        string? stringQuestionResult = consoleControl.AskUserString("string test");
         if (string.IsNullOrEmpty(stringQuestionResult))
-            Console.WriteLine("woops !");
+            consoleControl.DisplayDebug("string test", ["uh oh, erreur !"]);
         else
-            Console.WriteLine($"Super, ton mot favoris est {stringQuestionResult} !");
+            consoleControl.DisplayLog("string test", [stringQuestionResult]);
         ConsoleControl.Pause(true);
         #endregion
 
         #region integer
-        int? integerQuestionResult = consoleControl.AskUserInteger("Quel est ton nombre favoris ?");
+        int? integerQuestionResult = consoleControl.AskUserInteger("integer test");
         if (null == integerQuestionResult)
-            Console.WriteLine("woops !");
+            consoleControl.DisplayDebug("integer test", ["uh oh, erreur !"]);
         else
-            Console.WriteLine($"Super, ton nombre favoris est {integerQuestionResult} !");
+            consoleControl.DisplayLog("integer test", [integerQuestionResult.ToString()]);
         ConsoleControl.Pause(true);
         #endregion
-
-        // Réinitialisation des paramètres de la console pour la suite du code
-        Console.ResetColor();
     }
 }

@@ -2,29 +2,102 @@
 
 public abstract class GameControl
 {
+    public const bool DEBUG               = true;
+    public const bool LOG                 = true;
+    public const ConsoleColor COLOR_DEBUG = ConsoleColor.Magenta;
+    public const ConsoleColor CONSOLE_LOG = ConsoleColor.Yellow;
+
     #region input
-    public abstract bool? AskUserBool(string question, bool? defaultResult = null);
-
-    public abstract char? AskUserChar(string question, char? defaultResult = null);
-
-    public abstract string? AskUserString(string question, string? defaultResult = "");
-
-    public abstract int? AskUserInteger(string question, int? defaultResult = null);
-    #endregion
-
-    #region output
-    public abstract void PrintError(Exception e);
-    #endregion
-}
-
-public class ConsoleControl : GameControl
-{
     /// <summary>
     /// Pose une question avec une réponse vraie / fausse
     /// </summary>
     /// <param name="question">Question</param>
     /// <param name="defaultResult">Résultat par défaut</param>
     /// <returns>Réponse</returns>
+    public abstract bool? AskUserBool(string question, bool? defaultResult = null);
+
+    /// <summary>
+    /// Pose une question avec une réponse sous la forme d'u caractère
+    /// </summary>
+    /// <param name="question">Question</param>
+    /// <param name="defaultResult">Résultat par défaut</param>
+    /// <returns>Réponse</returns>
+    public abstract char? AskUserChar(string question, char? defaultResult = null);
+
+    /// <summary>
+    /// Pose une question avec une réponse sous la forme d'une chaîne de caractères
+    /// </summary>
+    /// <param name="question">Question</param>
+    /// <param name="defaultResult">Résultat par défaut</param>
+    /// <returns>Réponse</returns>
+    public abstract string? AskUserString(string question, string? defaultResult = "");
+
+    /// <summary>
+    /// Pose une question avec une réponse sous la forme d'un nombre
+    /// </summary>
+    /// <param name="question">Question</param>
+    /// <param name="defaultResult">Résultat par défaut</param>
+    /// <returns>Réponse</returns>
+    public abstract int? AskUserInteger(string question, int? defaultResult = null);
+    #endregion
+
+    #region output
+    /// <summary>
+    /// Affiche une erreur dans la console
+    /// </summary>
+    /// <param name="e">Exception</param>
+    public abstract void PrintError(Exception e);
+
+    /// <summary>
+    /// Affiche un message multiligne avec titre
+    /// </summary>
+    /// <param name="title">Titre</param>
+    /// <param name="messages">Corps du message</param>
+    /// <param name="titleColor">Couleur du titre</param>
+    /// <param name="messageColor">Couleur du message</param>
+    public abstract void Display(string title, IEnumerable<string> messages, ConsoleColor titleColor = ConsoleColor.Green, ConsoleColor messageColor = ConsoleColor.Gray);
+
+    // ???????????
+    /// <summary>
+    /// Affiche un message sur une ligne avec titre
+    /// Utilise GameControl.Display()
+    /// </summary>
+    /// <param name="title">Titre</param>
+    /// <param name="message">Corps du message</param>
+    /// <param name="titleColor">Couleur du titre</param>
+    /// <param name="messageColor">Couleur du message</param>
+    public void Display(string title, string message, ConsoleColor titleColor = ConsoleColor.Green, ConsoleColor messageColor = ConsoleColor.Gray)
+    {
+        Display(title, new List<string>([message]), titleColor, messageColor);
+    }
+
+    /// <summary>
+    /// Affiche un message de débogage avec titre
+    /// </summary>
+    /// <param name="title">Titre</param>
+    /// <param name="messages">Corps du message</param>
+    public void DisplayDebug(string title, IEnumerable<string> messages)
+    {
+        if (DEBUG)
+            Display(title, messages, COLOR_DEBUG);
+    }
+
+    /// <summary>
+    /// Affiche un message de journalisation avec titre
+    /// </summary>
+    /// <param name="title">Titre</param>
+    /// <param name="messages">Corps du message</param>
+    public void DisplayLog(string title, IEnumerable<string> messages)
+    {
+        if (LOG)
+            Display(title, messages, CONSOLE_LOG);
+    }
+    #endregion
+}
+
+public class ConsoleControl : GameControl
+{
+    #region input
     public override bool? AskUserBool(string question, bool? defaultResult = null)
     {
         try
@@ -64,12 +137,6 @@ public class ConsoleControl : GameControl
         return null;
     }
 
-    /// <summary>
-    /// Pose une question avec une réponse sous la forme d'u caractère
-    /// </summary>
-    /// <param name="question">Question</param>
-    /// <param name="defaultResult">Résultat par défaut</param>
-    /// <returns>Réponse</returns>
     public override char? AskUserChar(string question, char? defaultResult = null)
     {
         try
@@ -97,12 +164,6 @@ public class ConsoleControl : GameControl
         return null;
     }
 
-    /// <summary>
-    /// Pose une question avec une réponse sous la forme d'une chaîne de caractères
-    /// </summary>
-    /// <param name="question">Question</param>
-    /// <param name="defaultResult">Résultat par défaut</param>
-    /// <returns>Réponse</returns>
     public override string? AskUserString(string question, string? defaultResult = "")
     {
         try
@@ -130,12 +191,6 @@ public class ConsoleControl : GameControl
         return null;
     }
 
-    /// <summary>
-    /// Pose une question avec une réponse sous la forme d'un nombre
-    /// </summary>
-    /// <param name="question">Question</param>
-    /// <param name="defaultResult">Résultat par défaut</param>
-    /// <returns>Réponse</returns>
     public override int? AskUserInteger(string question, int? defaultResult = null)
     {
         try
@@ -167,10 +222,6 @@ public class ConsoleControl : GameControl
         return null;
     }
 
-    /// <summary>
-    /// Affiche une erreur dans la console
-    /// </summary>
-    /// <param name="e">Exception</param>
     public override void PrintError(Exception e)
     {
         Console.ForegroundColor = ConsoleColor.Red;
@@ -178,11 +229,9 @@ public class ConsoleControl : GameControl
         Console.WriteLine("Une exception a été levée au cours du traitement : " + e.Message);
         Console.ResetColor();
     }
+    #endregion
 
-    /// <summary>
-    /// Effectue une pause
-    /// </summary>
-    /// <param name="doClear">Nettoyer la console après la pause</param>
+    #region output
     public static void Pause(bool doClear = false)
     {
         Console.WriteLine("...");
@@ -190,4 +239,26 @@ public class ConsoleControl : GameControl
         if (doClear)
             Console.Clear();
     }
+
+    public override void Display(string title, IEnumerable<string> messages, ConsoleColor titleColor, ConsoleColor messageColor)
+    {
+        // Affiche le titre s'il existe
+        if (!string.IsNullOrEmpty(title))
+        {
+            Console.ForegroundColor = titleColor;
+            Console.WriteLine(title);
+        }
+
+        // Vérifie que la IEnumerablee de message ne soit pas vide
+        if (null != messages && messages.Any())
+        {
+            // Affiche tous les messages
+            Console.ForegroundColor = messageColor;
+            foreach (string message in messages)
+                Console.WriteLine(message);
+        }
+
+        Console.ResetColor();
+    }
+    #endregion
 }
