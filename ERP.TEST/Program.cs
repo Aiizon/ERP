@@ -200,8 +200,9 @@ internal class Program
     }
 
     /// <summary>
-    /// Effectue une pause et vide la console
+    /// Effectue une pause
     /// </summary>
+    /// <param name="doClear">Nettoyer la console après la pause</param>
     public static void Pause(bool doClear = false)
     {
         Console.WriteLine("...");
