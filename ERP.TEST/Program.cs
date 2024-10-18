@@ -90,6 +90,12 @@ internal class Program
         return null;
     }
 
+    /// <summary>
+    /// Pose une question avec une réponse sous la forme d'u caractère
+    /// </summary>
+    /// <param name="question">Question</param>
+    /// <param name="defaultResult">Résultat par défaut</param>
+    /// <returns>Réponse</returns>
     public static char? AskUserChar(string question, char? defaultResult = null)
     {
         try
