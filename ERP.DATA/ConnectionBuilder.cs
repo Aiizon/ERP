@@ -24,7 +24,7 @@ public class ConnectionBuilder
     /// <summary>
     /// Database password @todo: stop storing password in plain text
     /// </summary>
-    private string Password { get; set; }
+    public string Password { private get; set; }
 
     /// <summary>
     /// Timeout for database connection (in seconds)
@@ -74,30 +74,12 @@ public class ConnectionBuilder
     }
 
     /// <summary>
-    /// Returns the database connection object for SQL Server
-    /// </summary>
-    /// <returns></returns>
-    public SqlConnection ToSqlConnection()
-    {
-        return new SqlConnection(ToSQLConnectionString());
-    }
-
-    /// <summary>
     /// Returns the connection string in MySQL format
     /// </summary>
     /// <returns></returns>
     public string ToMysqlConnectionString()
     {
         return $"Server={Server};Database={Database};Uid={User};Pwd={Password};";
-    }
-
-    /// <summary>
-    /// Returns the database connection object for MySQL
-    /// </summary>
-    /// <returns></returns>
-    public MySqlConnection ToMySqlConnection()
-    {
-        return new MySqlConnection(ToMysqlConnectionString());
     }
 
     /// <summary>
@@ -108,39 +90,4 @@ public class ConnectionBuilder
     {
         return $"Driver={{SQL Server}};Server={Server};Database={Database};Uid={User};Pwd={Password};";
     }
-
-    /// <summary>
-    /// Returns the appropriate connection object based on the database type
-    /// </summary>
-    /// <returns></returns>
-    public DbConnection? GetConnection()
-    {
-        switch (Database)
-        {
-            case "SQL Server":
-                return ToSqlConnection();
-            case "MySQL":
-                return ToMySqlConnection();
-            default:
-                return null;
-        }
-    }
-    
-    // /// <summary>
-    // /// Returns the appropriate connection object based on the database type
-    // /// </summary>
-    // /// <returns></returns>
-    // public TConn GetConnection<TConn>() where TConn : DbConnection, new()
-    // {
-    //     var conn = new TConn();
-    //     switch (conn)
-    //     {
-    //         case SqlConnection:
-    //             return (TConn)(object)ToSqlConnection();
-    //         case MySqlConnection:
-    //             return (TConn)(object)ToMySqlConnection();
-    //         default:
-    //             return conn;
-    //     }
-    // }
 }

@@ -8,7 +8,7 @@ public abstract class Database
     /// <summary>
     /// Connection builder
     /// </summary>
-    internal ConnectionBuilder Builder { get; set; }
+    public ConnectionBuilder Builder { get; set; }
 
     /// <summary>
     /// Constructor
@@ -18,11 +18,47 @@ public abstract class Database
     {
         Builder = builder;
     }
+
+    /// <summary>
+    /// Get entities
+    /// </summary>
+    /// <param name="where">Condition clause</param>
+    /// <param name="parser">Parsing method</param>
+    /// <typeparam name="E">Entity type</typeparam>
+    /// <returns>List of entities</returns>
+    public abstract List<E> GetEntities<E>(string where, Func<Database, DbDataReader, E> parser) where E : Entity, new();
+
+
+    /// <summary>
+    /// Execute a non-query
+    /// </summary>
+    /// <param name="query">Query</param>
+    /// <exception cref="DataException"></exception>
+    public abstract void ExecuteNonQuery(string query);
+
+    /// <summary>
+    /// Execute a scalar query
+    /// </summary>
+    /// <param name="query">Query</param>
+    /// <param name="parser">Parsing method</param>
+    /// <returns>Integer result</returns>
+    /// <exception cref="DataException"></exception>
+    public abstract T ExecuteScalar<T>(string query, Func<Database, T> parser);
+
+    /// <summary>
+    /// Execute a reader query
+    /// </summary>
+    /// <param name="query">Query</param>
+    /// <param name="parser">Parsing method</param>
+    /// <typeparam name="T">Data type</typeparam>
+    /// <returns>Result</returns>
+    public abstract List<T> ExecuteReader<T>(string query, Func<Database, DbDataReader, T> parser);
 }
 
-public abstract class Database<TConn,TCom> : Database
+public abstract class Database<TConn, TCom, TR> : Database
     where TConn : DbConnection
     where TCom : DbCommand
+    where TR : DbDataReader
 {
 
     /// <summary>
@@ -49,30 +85,9 @@ public abstract class Database<TConn,TCom> : Database
     /// Try to open connection
     /// </summary>
     /// <returns>True if connection is successful, false otherwise</returns>
-    public virtual bool TryConnection()
+    public virtual void TryConnection()
     {
-        try
-        {
-            // Open connection and execute the default query to test it
-            using (TConn connection = GetConnection())
-            {
-                connection.Open();
-                using (TCom command = GetCommand(connection, Builder.DefaultQuery))
-                {
-                    var result = command.ExecuteNonQuery();
-
-                    if (result < 0)
-                    {
-                        return false;
-                    }
-                    return true;
-                }
-            }
-        }
-        catch
-        {
-            return false;
-        }
+        ExecuteNonQuery(Builder.DefaultQuery);
     }
 
     /// <summary>
@@ -80,7 +95,7 @@ public abstract class Database<TConn,TCom> : Database
     /// </summary>
     /// <param name="query">Query</param>
     /// <exception cref="DataException"></exception>
-    public virtual void ExecuteNonQuery(string query)
+    public override void ExecuteNonQuery(string query)
     {
         try
         {
@@ -112,7 +127,7 @@ public abstract class Database<TConn,TCom> : Database
     /// <param name="parser">Parsing method</param>
     /// <returns>Integer result</returns>
     /// <exception cref="DataException"></exception>
-    public virtual T ExecuteScalar<T>(string query, Func<Database, T> parser)
+    public override T ExecuteScalar<T>(string query, Func<Database, T> parser)
     {
         T result = default(T)!;
         try
@@ -149,7 +164,7 @@ public abstract class Database<TConn,TCom> : Database
     /// <param name="parser">Parsing method</param>
     /// <typeparam name="T">Data type</typeparam>
     /// <returns>Result</returns>
-    public virtual List<T> ExecuteReader<T>(string query, Func<Database, DbDataReader, T> parser)
+    public override List<T> ExecuteReader<T>(string query, Func<Database, DbDataReader, T> parser)
     {
         List<T> result = new List<T>();
 

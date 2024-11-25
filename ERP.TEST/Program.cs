@@ -3,6 +3,11 @@ internal class Program
 {
     static void Main(string[] args)
     {
+        DatabaseTest(args);
+    }
+
+    public static void ConsoleTest(string[] args)
+    {
         // Initialise la logique de contrôle
         GameControl consoleControl = new ConsoleControl();
         consoleControl.DEBUG = true;
@@ -53,5 +58,10 @@ internal class Program
         ConsoleControl.Pause(true);
 
         #endregion
+    }
+
+    public static void DatabaseTest(string[] args)
+    {
+
     }
 }
