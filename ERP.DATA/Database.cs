@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.Common;
+using System.Reflection;
 
 namespace ERP.DATA;
 
@@ -116,7 +117,7 @@ public abstract class Database<TConn, TCom, TR> : Database
         }
         catch (DbException ex)
         {
-            HandleException(ex, "Database.ExecuteNonQuery");
+            HandleException(ex, MethodBase.GetCurrentMethod()!.Name);
         }
     }
 
@@ -151,7 +152,7 @@ public abstract class Database<TConn, TCom, TR> : Database
         }
         catch (DbException ex)
         {
-            HandleException(ex, "Database.ExecuteScalar");
+            HandleException(ex, MethodBase.GetCurrentMethod()!.Name);
         }
 
         return result;
@@ -193,15 +194,66 @@ public abstract class Database<TConn, TCom, TR> : Database
         }
         catch (DbException ex)
         {
-            HandleException(ex, "Database.ExecuteReader");
+            HandleException(ex, MethodBase.GetCurrentMethod()!.Name);
         }
         catch (Exception ex)
         {
-            HandleException(new Exception(ex.Message), "Database.ExecuteReader failed at parsing");
+            HandleException(new Exception(ex.Message), MethodBase.GetCurrentMethod()!.Name +" failed at parsing");
         }
 
         return result;
     }
+
+    /// <summary>
+    /// Get string value
+    /// </summary>
+    /// <param name="reader">Reader</param>
+    /// <param name="columnName">Column name</param>
+    /// <typeparam name="TR">Reader type</typeparam>
+    /// <returns>Value</returns>
+    public abstract string? GetStringValue<TR>(TR reader, string columnName) where TR : DbDataReader;
+    /// <summary>
+    /// Set string value
+    /// </summary>
+    /// <param name="columnName">Column name</param>
+    /// <typeparam name="TR">Reader type</typeparam>
+    /// <param name="content">Content</param>
+    /// <returns>Value</returns>
+    public abstract string SetStringValue(string columnName, string? content);
+
+    /// <summary>
+    /// Get int value
+    /// </summary>
+    /// <param name="reader">Reader</param>
+    /// <param name="columnName">Column name</param>
+    /// <typeparam name="TR">Reader type</typeparam>
+    /// <returns>Value</returns>
+    public abstract int? GetIntValue<TR>(TR reader, string columnName) where TR : DbDataReader;
+    /// <summary>
+    /// Get int value
+    /// </summary>
+    /// <param name="columnName">Column name</param>
+    /// <typeparam name="TR">Reader type</typeparam>
+    /// <param name="content">Content</param>
+    /// <returns>Value</returns>
+    public abstract string SetIntValue(string columnName, int? content);
+
+    /// <summary>
+    /// Get int value
+    /// </summary>
+    /// <param name="reader">Reader</param>
+    /// <param name="columnName">Column name</param>
+    /// <typeparam name="TR">Reader type</typeparam>
+    /// <returns>Value</returns>
+    public abstract DateTime? GetDateTimeValue<TR>(TR reader, string columnName) where TR : DbDataReader;
+    /// <summary>
+    /// Get int value
+    /// </summary>
+    /// <param name="columnName">Column name</param>
+    /// <typeparam name="TR">Reader type</typeparam>
+    /// <param name="content">Content</param>
+    /// <returns>Value</returns>
+    public abstract string SetDateTimeValue(string columnName, DateTime? content);
 
     public static void HandleException(Exception ex, string title)
     {

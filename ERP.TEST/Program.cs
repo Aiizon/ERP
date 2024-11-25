@@ -1,4 +1,6 @@
-﻿namespace ERP.TEST;
+﻿using ERP.DATA;
+
+namespace ERP.TEST;
 internal class Program
 {
     static void Main(string[] args)
@@ -62,6 +64,13 @@ internal class Program
 
     public static void DatabaseTest(string[] args)
     {
+        ConsoleControl consoleControl = new ConsoleControl();
+        consoleControl.DEBUG = true;
+        consoleControl.DisplayDebug("debug", ["mode débogage activé"]);
+        consoleControl.LOG = true;
+        consoleControl.DisplayDebug("log", ["mode journalisation activé"]);
 
+        // Test de la base de données
+        MysqlDatabase database = new MysqlDatabase(new ConnectionBuilder("mysql", "localhost", "select @@version;"));
     }
 }
