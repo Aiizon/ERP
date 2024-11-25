@@ -2,8 +2,8 @@
 
 public abstract class GameControl
 {
-    public const bool DEBUG               = true;
-    public const bool LOG                 = true;
+    public const bool DEBUG               = false;
+    public const bool LOG                 = false;
     public const ConsoleColor COLOR_DEBUG = ConsoleColor.Magenta;
     public const ConsoleColor CONSOLE_LOG = ConsoleColor.Yellow;
 
@@ -66,7 +66,7 @@ public abstract class GameControl
     /// <param name="message">Corps du message</param>
     /// <param name="titleColor">Couleur du titre</param>
     /// <param name="messageColor">Couleur du message</param>
-    public void Display(string title, string message, ConsoleColor titleColor = ConsoleColor.Green, ConsoleColor messageColor = ConsoleColor.Gray)
+    public virtual void Display(string title, string message, ConsoleColor titleColor = ConsoleColor.Green, ConsoleColor messageColor = ConsoleColor.Gray)
     {
         Display(title, new List<string>([message]), titleColor, messageColor);
     }
@@ -76,7 +76,7 @@ public abstract class GameControl
     /// </summary>
     /// <param name="title">Titre</param>
     /// <param name="messages">Corps du message</param>
-    public void DisplayDebug(string title, IEnumerable<string> messages)
+    public virtual void DisplayDebug(string title, IEnumerable<string> messages)
     {
         if (DEBUG)
             Display(title, messages, COLOR_DEBUG);
@@ -87,7 +87,7 @@ public abstract class GameControl
     /// </summary>
     /// <param name="title">Titre</param>
     /// <param name="messages">Corps du message</param>
-    public void DisplayLog(string title, IEnumerable<string> messages)
+    public virtual void DisplayLog(string title, IEnumerable<string> messages)
     {
         if (LOG)
             Display(title, messages, CONSOLE_LOG);
@@ -102,7 +102,7 @@ public class ConsoleControl : GameControl
     {
         try
         {
-            Console.WriteLine(question);
+            Display(question, "");
 
             // Gestion de la chaîne de caractères pour afficher la valeur par défaut si elle existe
             string defaultResultInfo = (null == defaultResult) ? "" : (defaultResult.Value ? "[Y]" : "[N]");
@@ -224,10 +224,15 @@ public class ConsoleControl : GameControl
 
     public override void PrintError(Exception e)
     {
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine(e.GetType().FullName);
-        Console.WriteLine("Une exception a été levée au cours du traitement : " + e.Message);
-        Console.ResetColor();
+        string title = e.GetType().FullName;
+        string message = e.Message;
+        if (DEBUG)
+        {
+            DisplayDebug(title, [message]);
+        } else if (LOG)
+        {
+            DisplayLog(title, [message]);
+        }
     }
     #endregion
 

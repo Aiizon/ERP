@@ -5,9 +5,14 @@ internal class Program
     {
         // Initialise la logique de contrôle
         GameControl consoleControl = new ConsoleControl();
+        consoleControl.DEBUG = true;
+        consoleControl.DisplayDebug("debug", ["mode débogage activé"]);
+        consoleControl.LOG = true;
+        consoleControl.DisplayDebug("log", ["mode journalisation activé"]);
 
         // Questions de test
         #region bool
+
         bool? boolQuestionResult = consoleControl.AskUserBool("bool test")!.Value;
         if (null == boolQuestionResult)
             consoleControl.DisplayDebug("bool test", ["uh oh, erreur !"]);
@@ -16,30 +21,37 @@ internal class Program
         else
             consoleControl.DisplayLog("bool test", ["non"]);
         ConsoleControl.Pause(true);
+
         #endregion
 
         #region char
+
         char? charQuestionResult = consoleControl.AskUserChar("char test").Value;
         consoleControl.DisplayLog("char test", [charQuestionResult.ToString()]);
         ConsoleControl.Pause(true);
+
         #endregion
 
         #region string
+
         string? stringQuestionResult = consoleControl.AskUserString("string test");
         if (string.IsNullOrEmpty(stringQuestionResult))
             consoleControl.DisplayDebug("string test", ["uh oh, erreur !"]);
         else
             consoleControl.DisplayLog("string test", [stringQuestionResult]);
         ConsoleControl.Pause(true);
+
         #endregion
 
         #region integer
+
         int? integerQuestionResult = consoleControl.AskUserInteger("integer test");
         if (null == integerQuestionResult)
             consoleControl.DisplayDebug("integer test", ["uh oh, erreur !"]);
         else
             consoleControl.DisplayLog("integer test", [integerQuestionResult.ToString()]);
         ConsoleControl.Pause(true);
+
         #endregion
     }
 }
