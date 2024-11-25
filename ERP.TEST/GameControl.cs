@@ -2,10 +2,10 @@
 
 public abstract class GameControl
 {
-    public const bool DEBUG               = false;
-    public const bool LOG                 = false;
-    public const ConsoleColor COLOR_DEBUG = ConsoleColor.Magenta;
-    public const ConsoleColor CONSOLE_LOG = ConsoleColor.Yellow;
+    public bool DEBUG               = false;
+    public bool LOG                 = false;
+    public ConsoleColor COLOR_DEBUG = ConsoleColor.Magenta;
+    public ConsoleColor CONSOLE_LOG = ConsoleColor.Yellow;
 
     #region input
     /// <summary>
