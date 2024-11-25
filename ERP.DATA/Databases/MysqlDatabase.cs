@@ -1,9 +1,9 @@
 using System.Data.Common;
 using System.Reflection;
-using ERP.DATA;
+using ERP.DATA.Core;
 using MySql.Data.MySqlClient;
 
-namespace ERP.TEST;
+namespace ERP.DATA.Databases;
 
 public class MysqlDatabase : Database<MySqlConnection, MySqlCommand, DbDataReader>
 {

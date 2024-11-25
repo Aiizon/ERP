@@ -1,6 +1,6 @@
 using System.Data.Common;
 
-namespace ERP.DATA;
+namespace ERP.DATA.Core;
 
 public abstract class Field
 {
@@ -111,8 +111,9 @@ public abstract class Field<T> : Field
         return result;
     }
 
-    public string FormatValue()
-    {
-        return Content.ToString();
-    }
+    public abstract string FormatValue();
 }
+
+
+
+// @todo: add more field types

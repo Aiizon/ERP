@@ -1,8 +1,4 @@
-using System.Data.Common;
-using System.Data.SqlClient;
-using MySql.Data.MySqlClient;
-
-namespace ERP.DATA;
+namespace ERP.DATA.Core;
 
 public class ConnectionBuilder
 {

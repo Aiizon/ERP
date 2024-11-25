@@ -1,4 +1,5 @@
-﻿using ERP.DATA;
+﻿using ERP.DATA.Core;
+using ERP.DATA.Databases;
 
 namespace ERP.TEST;
 internal class Program

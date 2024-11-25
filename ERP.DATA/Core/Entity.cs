@@ -1,4 +1,4 @@
-namespace ERP.DATA;
+namespace ERP.DATA.Core;
 
 public abstract class Entity
 {

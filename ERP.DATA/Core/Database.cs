@@ -2,7 +2,7 @@ using System.Data;
 using System.Data.Common;
 using System.Reflection;
 
-namespace ERP.DATA;
+namespace ERP.DATA.Core;
 
 public abstract class Database
 {
@@ -54,6 +54,57 @@ public abstract class Database
     /// <typeparam name="T">Data type</typeparam>
     /// <returns>Result</returns>
     public abstract List<T> ExecuteReader<T>(string query, Func<Database, DbDataReader, T> parser);
+
+     /// <summary>
+    /// Get string value
+    /// </summary>
+    /// <param name="reader">Reader</param>
+    /// <param name="columnName">Column name</param>
+    /// <typeparam name="TR">Reader type</typeparam>
+    /// <returns>Value</returns>
+    public abstract string? GetStringValue<TR>(TR reader, string columnName) where TR : DbDataReader;
+    /// <summary>
+    /// Set string value
+    /// </summary>
+    /// <param name="columnName">Column name</param>
+    /// <typeparam name="TR">Reader type</typeparam>
+    /// <param name="content">Content</param>
+    /// <returns>Value</returns>
+    public abstract string SetStringValue(string columnName, string? content);
+
+    /// <summary>
+    /// Get int value
+    /// </summary>
+    /// <param name="reader">Reader</param>
+    /// <param name="columnName">Column name</param>
+    /// <typeparam name="TR">Reader type</typeparam>
+    /// <returns>Value</returns>
+    public abstract int? GetIntValue<TR>(TR reader, string columnName) where TR : DbDataReader;
+    /// <summary>
+    /// Get int value
+    /// </summary>
+    /// <param name="columnName">Column name</param>
+    /// <typeparam name="TR">Reader type</typeparam>
+    /// <param name="content">Content</param>
+    /// <returns>Value</returns>
+    public abstract string SetIntValue(string columnName, int? content);
+
+    /// <summary>
+    /// Get int value
+    /// </summary>
+    /// <param name="reader">Reader</param>
+    /// <param name="columnName">Column name</param>
+    /// <typeparam name="TR">Reader type</typeparam>
+    /// <returns>Value</returns>
+    public abstract DateTime? GetDateTimeValue<TR>(TR reader, string columnName) where TR : DbDataReader;
+    /// <summary>
+    /// Get int value
+    /// </summary>
+    /// <param name="columnName">Column name</param>
+    /// <typeparam name="TR">Reader type</typeparam>
+    /// <param name="content">Content</param>
+    /// <returns>Value</returns>
+    public abstract string SetDateTimeValue(string columnName, DateTime? content);
 }
 
 public abstract class Database<TConn, TCom, TR> : Database
@@ -203,57 +254,6 @@ public abstract class Database<TConn, TCom, TR> : Database
 
         return result;
     }
-
-    /// <summary>
-    /// Get string value
-    /// </summary>
-    /// <param name="reader">Reader</param>
-    /// <param name="columnName">Column name</param>
-    /// <typeparam name="TR">Reader type</typeparam>
-    /// <returns>Value</returns>
-    public abstract string? GetStringValue<TR>(TR reader, string columnName) where TR : DbDataReader;
-    /// <summary>
-    /// Set string value
-    /// </summary>
-    /// <param name="columnName">Column name</param>
-    /// <typeparam name="TR">Reader type</typeparam>
-    /// <param name="content">Content</param>
-    /// <returns>Value</returns>
-    public abstract string SetStringValue(string columnName, string? content);
-
-    /// <summary>
-    /// Get int value
-    /// </summary>
-    /// <param name="reader">Reader</param>
-    /// <param name="columnName">Column name</param>
-    /// <typeparam name="TR">Reader type</typeparam>
-    /// <returns>Value</returns>
-    public abstract int? GetIntValue<TR>(TR reader, string columnName) where TR : DbDataReader;
-    /// <summary>
-    /// Get int value
-    /// </summary>
-    /// <param name="columnName">Column name</param>
-    /// <typeparam name="TR">Reader type</typeparam>
-    /// <param name="content">Content</param>
-    /// <returns>Value</returns>
-    public abstract string SetIntValue(string columnName, int? content);
-
-    /// <summary>
-    /// Get int value
-    /// </summary>
-    /// <param name="reader">Reader</param>
-    /// <param name="columnName">Column name</param>
-    /// <typeparam name="TR">Reader type</typeparam>
-    /// <returns>Value</returns>
-    public abstract DateTime? GetDateTimeValue<TR>(TR reader, string columnName) where TR : DbDataReader;
-    /// <summary>
-    /// Get int value
-    /// </summary>
-    /// <param name="columnName">Column name</param>
-    /// <typeparam name="TR">Reader type</typeparam>
-    /// <param name="content">Content</param>
-    /// <returns>Value</returns>
-    public abstract string SetDateTimeValue(string columnName, DateTime? content);
 
     public static void HandleException(Exception ex, string title)
     {
