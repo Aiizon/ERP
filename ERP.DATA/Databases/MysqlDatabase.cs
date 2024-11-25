@@ -10,16 +10,17 @@ public class MysqlDatabase : Database<MySqlConnection, MySqlCommand, DbDataReade
     /// <summary>
     /// Constructor
     /// </summary>
-    /// <param name="builder">Connection object builder</param>
-    public MysqlDatabase(ConnectionBuilder builder) : base(builder)
+    /// <param name="builder">Connection builder</param>
+    /// <param name="timeout">Timeout</param>
+    /// <param name="user">Database user</param>
+    /// <param name="password">Database password</param>
+    public MysqlDatabase(ConnectionBuilder builder, int timeout, string user, string password) : base(builder)
     {
-        // Set the builder's properties @todo: move this to a config file
+        // Set the builder's properties
         #region config
-        Builder.Database = "MySQL";
-        Builder.Server = "localhost";
-        Builder.Timeout = 20;
-        Builder.User = "wt";
-        Builder.Password = "kq4DEpdU5b3jsgXT7xbqknxyzhpHFpmM";
+        Builder.User = user;
+        Builder.Password = password;
+        Builder.Timeout = timeout;
         #endregion
     }
 

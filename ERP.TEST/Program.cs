@@ -72,6 +72,6 @@ internal class Program
         consoleControl.DisplayDebug("log", ["mode journalisation activé"]);
 
         // Test de la base de données
-        MysqlDatabase database = new MysqlDatabase(new ConnectionBuilder("mysql", "localhost", "select @@version;"));
+        MysqlDatabase database = new MysqlDatabase(new ConnectionBuilder("mysql", "localhost", "select @@version;"), 20, "wt", "kq4DEpdU5b3jsgXT7xbqknxyzhpHFpmM");
     }
 }
