@@ -4,7 +4,7 @@ namespace ERP.DATA.Fields;
 
 public class IntegerField : Field<int?>
 {
-    public IntegerField(Entity entity, string columnName, int? content, bool isPrimaryKey = false) : base(entity, columnName, content, isPrimaryKey)
+    public IntegerField(Entity entity, string columnName, bool isPrimaryKey = false, bool doInsert = true) : base(entity, columnName, isPrimaryKey, doInsert)
     {
     }
 

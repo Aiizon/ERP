@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace ERP.DATA.Core;
 
 public abstract class Entity
@@ -27,7 +29,7 @@ public abstract class Entity
     /// </summary>
     public Entity()
     {
-        Fields   = new List<Field>();
+        Fields = new List<Field>();
     }
 
     /// <summary>
@@ -41,13 +43,31 @@ public abstract class Entity
     {
         try
         {
-
+            string fieldExpr = "";
+            string valueExpr = "";
+            foreach (Field field in Fields)
+            {
+                if (!field.DoInsert)
+                {
+                    continue;
+                }
+                if (fieldExpr != "")
+                {
+                    fieldExpr += ",";
+                    valueExpr += ",";
+                }
+                fieldExpr += field.ColumnName;
+                valueExpr += field.FormatValue();
+            }
+            string query = $"INSERT INTO {TableName}( {fieldExpr} ) VALUES( {valueExpr} )";
+            Database.ExecuteNonQuery(query);
+            return true;
         }
         catch (Exception e)
         {
+            Database.HandleException(e, MethodBase.GetCurrentMethod()!.Name);
             return false;
         }
-        return true;
     }
 
     /// <summary>
@@ -61,13 +81,42 @@ public abstract class Entity
     {
         try
         {
+            string setExpr = "";
+            string whereExpr = "";
 
+            foreach (Field field in Fields)
+            {
+                if (!field.DoInsert)
+                {
+                    continue;
+                }
+                if (field.IsPrimaryKey)
+                {
+                    if (whereExpr != "")
+                    {
+                        whereExpr += " AND ";
+                    }
+                    whereExpr += $"{field.ColumnName} = {field.FormatValue()}";
+                }
+                else
+                {
+                    if (setExpr != "")
+                    {
+                        setExpr += ",";
+                    }
+                    setExpr += $"{field.ColumnName} = {field.FormatValue()}";
+                }
+            }
+
+            string query = $"UPDATE {TableName} SET {setExpr} WHERE {whereExpr}";
+            Database.ExecuteNonQuery(query);
+            return true;
         }
         catch (Exception e)
         {
+            Database.HandleException(e, MethodBase.GetCurrentMethod()!.Name);
             return false;
         }
-        return true;
     }
 
     /// <summary>
@@ -81,13 +130,26 @@ public abstract class Entity
     {
         try
         {
+            string whereExpr = "";
 
+            foreach (Field field in Fields.Where(f => f.IsPrimaryKey))
+            {
+                if (!field.DoInsert)
+                {
+                    continue;
+                }
+                whereExpr += $"{field.ColumnName} = {field.FormatValue()}";
+            }
+
+            string query = $"DELETE FROM {TableName} WHERE {whereExpr}";
+            Database.ExecuteNonQuery(query);
+            return true;
         }
         catch (Exception e)
         {
+            Database.HandleException(e, MethodBase.GetCurrentMethod()!.Name);
             return false;
         }
-        return true;
     }
 
     /// <summary>
@@ -97,7 +159,7 @@ public abstract class Entity
     /// <param name="isPrimaryKey">Is primary key?</param>
     public void Add(string field, bool isPrimaryKey = false)
     {
-        //@todo: create class extending Field
+        //@todo: add field type to params
         //Fields.Add(new Field(this, field, isPrimaryKey));
     }
 }

@@ -4,7 +4,7 @@ namespace ERP.DATA.Fields;
 
 public class StringField : Field<string?>
 {
-    public StringField(Entity entity, string columnName, string? content, bool isPrimaryKey = false) : base(entity, columnName, content, isPrimaryKey)
+    public StringField(Entity entity, string columnName, bool isPrimaryKey = false, bool doInsert = true) : base(entity, columnName, isPrimaryKey, doInsert)
     {
     }
 

@@ -5,7 +5,7 @@ namespace ERP.DATA.Entities;
 
 public class Bay : Entity
 {
-    public override string TableName { get; }
+    public sealed override string TableName { get; }
     public override string TableAlias { get; }
 
     public IntegerField Id { get; private set; }
@@ -16,6 +16,8 @@ public class Bay : Entity
     {
         TableName  = "bay";
         TableAlias = "b";
-
+        Id         = new IntegerField(this, TableName, true, false);
+        Name       = new StringField(this, TableName);
+        Location   = new StringField(this, TableName);
     }
 }

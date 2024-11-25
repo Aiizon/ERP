@@ -105,6 +105,10 @@ public abstract class Database
     /// <param name="content">Content</param>
     /// <returns>Value</returns>
     public abstract string SetDateTimeValue(string columnName, DateTime? content);
+
+
+
+    public abstract void HandleException(Exception ex, string title);
 }
 
 public abstract class Database<TConn, TCom, TR> : Database
@@ -255,8 +259,8 @@ public abstract class Database<TConn, TCom, TR> : Database
         return result;
     }
 
-    public static void HandleException(Exception ex, string title)
+    public override void HandleException(Exception ex, string title)
     {
-
+        Console.WriteLine(title + ": " + ex.Message);
     }
 }

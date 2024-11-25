@@ -23,6 +23,11 @@ public abstract class Field
     /// Is this field a primary key?
     /// </summary>
     public bool IsPrimaryKey { get; private set; }
+    
+    /// <summary>
+    /// Do we need to handle this field with code / Is it auto-generated?
+    /// </summary>
+    public bool DoInsert { get; set; }
 
     /// <summary>
     /// Constructor
@@ -30,17 +35,22 @@ public abstract class Field
     /// <param name="entity">Entity</param>
     /// <param name="columnName">Column name</param>
     /// <param name="isPrimaryKey">Is primary key?</param>
+    /// <param name="doInsert">Do we need to handle this field with code / Is it auto-generated?</param>
     public Field
     (
         Entity entity,
         string columnName,
-        bool   isPrimaryKey = false
+        bool   isPrimaryKey = false,
+        bool   doInsert = true
     )
     {
         Entity       = entity;
         ColumnName   = columnName;
         IsPrimaryKey = isPrimaryKey;
+        DoInsert     = doInsert;
     }
+
+    public abstract string FormatValue();
 }
 
 public abstract class Field<T> : Field
@@ -48,24 +58,22 @@ public abstract class Field<T> : Field
     /// <summary>
     /// Value of the field
     /// </summary>
-    public T Content { get; set; }
+    public T? Content { get; set; }
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="entity">Entity</param>
     /// <param name="columnName">Column name</param>
-    /// <param name="content">Content</param>
     /// <param name="isPrimaryKey">Is primary key?</param>
     public Field
     (
         Entity entity,
         string columnName,
-        T      content,
-        bool   isPrimaryKey = false
-    ) : base(entity, columnName, isPrimaryKey)
+        bool   isPrimaryKey = false,
+        bool   doInsert = false
+    ) : base(entity, columnName, isPrimaryKey, doInsert)
     {
-        Content = content;
     }
 
     /// <summary>
@@ -110,10 +118,6 @@ public abstract class Field<T> : Field
 
         return result;
     }
-
-    public abstract string FormatValue();
 }
-
-
 
 // @todo: add more field types
