@@ -24,12 +24,12 @@ public class MysqlDatabase : Database<MySqlConnection, MySqlCommand, DbDataReade
         #endregion
     }
 
-    public override MySqlConnection GetConnection()
+    protected override MySqlConnection GetConnection()
     {
         return new MySqlConnection(Builder.ToMysqlConnectionString());
     }
 
-    public override MySqlCommand GetCommand(MySqlConnection connection, string query)
+    protected override MySqlCommand GetCommand(MySqlConnection connection, string query)
     {
         return new MySqlCommand(query, connection);
     }
@@ -124,11 +124,5 @@ public class MysqlDatabase : Database<MySqlConnection, MySqlCommand, DbDataReade
             return "NULL";
         }
         return $"'{content:yyyy-MM-dd HH:mm:ss}'";
-    }
-
-    public override List<TE> GetEntities<TE>(string where, Func<Database, DbDataReader, TE> parser)
-    {
-        string query = "";
-        return new List<TE>();
     }
 }

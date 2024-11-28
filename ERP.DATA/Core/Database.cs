@@ -9,13 +9,13 @@ public abstract class Database
     /// <summary>
     /// Connection builder
     /// </summary>
-    public ConnectionBuilder Builder { get; set; }
+    protected ConnectionBuilder Builder { get; set; }
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="builder"></param>
-    public Database(ConnectionBuilder builder)
+    protected Database(ConnectionBuilder builder)
     {
         Builder = builder;
     }
@@ -24,10 +24,19 @@ public abstract class Database
     /// Get entities
     /// </summary>
     /// <param name="where">Condition clause</param>
-    /// <param name="parser">Parsing method</param>
-    /// <typeparam name="E">Entity type</typeparam>
+    /// <param name="orderBy">Ordering method</param>
+    /// <typeparam name="TE">Entity type</typeparam>
     /// <returns>List of entities</returns>
-    public abstract List<E> GetEntities<E>(string where, Func<Database, DbDataReader, E> parser) where E : Entity, new();
+    public abstract List<TE> GetEntities<TE>(string where, string? orderBy = null) where TE : Entity, new();
+
+    /// <summary>
+    /// Get one entity
+    /// </summary>
+    /// <param name="where">Condition clause</param>
+    /// <param name="orderBy">Ordering clause</param>
+    /// <typeparam name="TE">Entity type</typeparam>
+    /// <returns>Single entity</returns>
+    public abstract TE GetEntity<TE>(string where, string? orderBy = null) where TE : Entity, new();
 
 
     /// <summary>
@@ -67,7 +76,6 @@ public abstract class Database
     /// Set string value
     /// </summary>
     /// <param name="columnName">Column name</param>
-    /// <typeparam name="TR">Reader type</typeparam>
     /// <param name="content">Content</param>
     /// <returns>Value</returns>
     public abstract string SetStringValue(string columnName, string? content);
@@ -84,7 +92,6 @@ public abstract class Database
     /// Get int value
     /// </summary>
     /// <param name="columnName">Column name</param>
-    /// <typeparam name="TR">Reader type</typeparam>
     /// <param name="content">Content</param>
     /// <returns>Value</returns>
     public abstract string SetIntValue(string columnName, int? content);
@@ -101,7 +108,6 @@ public abstract class Database
     /// Get int value
     /// </summary>
     /// <param name="columnName">Column name</param>
-    /// <typeparam name="TR">Reader type</typeparam>
     /// <param name="content">Content</param>
     /// <returns>Value</returns>
     public abstract string SetDateTimeValue(string columnName, DateTime? content);
@@ -127,7 +133,7 @@ public abstract class Database<TConn, TCom, TR> : Database
     /// Get connection
     /// </summary>
     /// <returns></returns>
-    public abstract TConn GetConnection();
+    protected abstract TConn GetConnection();
 
     /// <summary>
     /// Get command
@@ -135,7 +141,7 @@ public abstract class Database<TConn, TCom, TR> : Database
     /// <param name="connection">Connection</param>
     /// <param name="query">Query</param>
     /// <returns></returns>
-    public abstract TCom GetCommand(TConn connection, string query);
+    protected abstract TCom GetCommand(TConn connection, string query);
 
     /// <summary>
     /// Try to open connection
@@ -144,6 +150,43 @@ public abstract class Database<TConn, TCom, TR> : Database
     public virtual void TryConnection()
     {
         ExecuteNonQuery(Builder.DefaultQuery);
+    }
+
+    public virtual TE Parser<TE>(Database db, DbDataReader reader) where TE : Entity, new()
+    {
+        var entity = new TE();
+
+        if (entity.ParseEntity(db, reader))
+        {
+            return entity;
+        }
+
+        throw new DataException($"Parsing failed for entity : {entity.TableName}");
+    }
+
+    public override List<TE> GetEntities<TE>(string where, string? orderBy = null)
+    {
+        var entity = new TE();
+
+        string query = $"SELECT ({entity.GetColumnNames()}) FROM {entity.TableName}";
+
+        if ("" != where)
+        {
+            query += $" WHERE {where}";
+        }
+
+        if (null != orderBy)
+        {
+            query += $" ORDER BY {orderBy}";
+        }
+
+        return ExecuteReader(query, Parser<TE>);
+    }
+
+
+    public override TE GetEntity<TE>(string where, string? orderBy = null)
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -194,10 +237,10 @@ public abstract class Database<TConn, TCom, TR> : Database
                 connection.Open();
                 using (TCom command = GetCommand(connection, query))
                 {
-                    var tmp = command.ExecuteScalar();
+                    command.ExecuteScalar();
                     result = parser(this);
 
-                    if (result == null)
+                    if (null == result)
                     {
                         throw new DataException("Query failed");
                     }

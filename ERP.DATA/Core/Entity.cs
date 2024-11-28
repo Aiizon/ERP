@@ -1,3 +1,4 @@
+using System.Data.Common;
 using System.Reflection;
 
 namespace ERP.DATA.Core;
@@ -30,6 +31,43 @@ public abstract class Entity
     public Entity()
     {
         Fields = new List<Field>();
+    }
+
+    internal bool ParseEntity(Database db, DbDataReader reader)
+    {
+        Database = db;
+
+        foreach (Field field in Fields)
+        {
+            if ("" == field.FormatValue())
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public virtual string GetColumnNames(bool useAlias = false)
+    {
+        string fieldExpr = "";
+        foreach (Field field in Fields)
+        {
+            if (fieldExpr != "")
+            {
+                fieldExpr += ",";
+            }
+
+            if (useAlias)
+            {
+                fieldExpr += $"{TableAlias}.{field.ColumnName}";
+            }
+            else
+            {
+                fieldExpr += field.ColumnName;
+            }
+        }
+        return fieldExpr;
     }
 
     /// <summary>
