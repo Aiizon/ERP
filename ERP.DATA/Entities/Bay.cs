@@ -11,6 +11,7 @@ public class Bay : Entity
     public IntegerField Id { get; private set; }
     public StringField Name { get; private set; }
     public StringField Location { get; private set; }
+    public UnitList<Bay> Units { get; private set; }
 
     public Bay()
     {
@@ -19,5 +20,20 @@ public class Bay : Entity
         Id         = new IntegerField(this, TableName, true, false);
         Name       = new StringField(this, TableName);
         Location   = new StringField(this, TableName);
+        Units      = new UnitList<Bay>(this, new Dictionary<string, Field>
+        {
+            { "bay_id", Id }
+        });
+    }
+}
+
+public class BayKey : ForeignKey<Bay>
+{
+    public IntegerField BayId { get; private set; }
+
+    public BayKey(Entity primary, string columnName = "bay_id") : base(primary)
+    {
+        BayId = new IntegerField(primary, columnName);
+        AddField("id", BayId);
     }
 }

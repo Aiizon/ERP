@@ -51,6 +51,10 @@ public abstract class Field
     }
 
     public abstract string FormatValue();
+    
+    internal abstract object? GetContent();
+    
+    internal abstract void SetContent(object? value);
 }
 
 public abstract class Field<T> : Field
@@ -66,6 +70,7 @@ public abstract class Field<T> : Field
     /// <param name="entity">Entity</param>
     /// <param name="columnName">Column name</param>
     /// <param name="isPrimaryKey">Is primary key?</param>
+    /// <param name="doInsert">Should we insert?</param>
     public Field
     (
         Entity entity,
@@ -117,6 +122,27 @@ public abstract class Field<T> : Field
         }
 
         return result;
+    }
+
+    internal override object? GetContent()
+    {
+        return Content;
+    }
+    
+    internal override void SetContent(object? value)
+    {
+        if (null == value)
+        {
+            Content = default;
+        }
+        else if (typeof(T) == value.GetType())
+        {
+            Content = (T?)value;
+        }
+        else
+        {
+            throw new Exception("Invalid type");
+        }
     }
 }
 

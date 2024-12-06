@@ -30,6 +30,14 @@ public abstract class Database
     public abstract List<TE> GetEntities<TE>(string where, string? orderBy = null) where TE : Entity, new();
 
     /// <summary>
+    /// Count entities
+    /// </summary>
+    /// <param name="where">Condition clause</param>
+    /// <typeparam name="TE">Entity type</typeparam>
+    /// <returns>Entity count</returns>
+    public abstract int? CountEntities<TE>(string where) where TE : Entity, new();
+
+    /// <summary>
     /// Get one entity
     /// </summary>
     /// <param name="where">Condition clause</param>
@@ -53,7 +61,7 @@ public abstract class Database
     /// <param name="parser">Parsing method</param>
     /// <returns>Integer result</returns>
     /// <exception cref="DataException"></exception>
-    public abstract T ExecuteScalar<T>(string query, Func<Database, T> parser);
+    public abstract T ExecuteScalar<T>(string query, Func<object?, T> parser);
 
     /// <summary>
     /// Execute a reader query
@@ -95,6 +103,13 @@ public abstract class Database
     /// <param name="content">Content</param>
     /// <returns>Value</returns>
     public abstract string SetIntValue(string columnName, int? content);
+
+    /// <summary>
+    /// Parse an integer
+    /// </summary>
+    /// <param name="value">Value to parse</param>
+    /// <returns>Parsed integer or null</returns>
+    public abstract int? ParseInt(object? value);
 
     /// <summary>
     /// Get int value
@@ -183,10 +198,36 @@ public abstract class Database<TConn, TCom, TR> : Database
         return ExecuteReader(query, Parser<TE>);
     }
 
+    public override int? CountEntities<TE>(string where)
+    {
+        var entity = new TE();
+
+        string query = $"SELECT COUNT(*) FROM {entity.TableName}";
+
+        if ("" != where)
+        {
+            query += $" WHERE {where}";
+        }
+
+        return ExecuteScalar(query, ParseInt);
+    }
+
 
     public override TE GetEntity<TE>(string where, string? orderBy = null)
     {
-        throw new NotImplementedException();
+        var result = GetEntities<TE>(where, orderBy);
+
+        if (null == result || result.Count == 0)
+        {
+            throw new DataException($"No entity found when querying : {where}");
+        }
+
+        if (result.Count > 1)
+        {
+            throw new DataException($"Too many entities found when querying : {where}");
+        }
+
+        return result.First();
     }
 
     /// <summary>
@@ -226,7 +267,7 @@ public abstract class Database<TConn, TCom, TR> : Database
     /// <param name="parser">Parsing method</param>
     /// <returns>Integer result</returns>
     /// <exception cref="DataException"></exception>
-    public override T ExecuteScalar<T>(string query, Func<Database, T> parser)
+    public override T ExecuteScalar<T>(string query, Func<object?, T> parser)
     {
         T result = default(T)!;
         try

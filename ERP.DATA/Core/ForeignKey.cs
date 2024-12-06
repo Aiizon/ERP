@@ -2,7 +2,7 @@ using System.Data;
 
 namespace ERP.DATA.Core;
 
-public abstract class ForeignKey
+public class ForeignKey
 {
     /// <summary>
     /// Database that this foreign key belongs to
@@ -48,7 +48,36 @@ public class ForeignKey<TF> : ForeignKey where TF : Entity, new()
 {
     public ForeignKey(Entity entity): base(entity) { }
 
+    /// <summary>
+    /// Get the foreign entity
+    /// </summary>
+    /// <returns>Foreign entity</returns>
     public TF GetForeignEntity()
+    {
+        string where = GetWhere();
+
+        return Database.GetEntity<TF>(where);
+    }
+
+    /// <summary>
+    /// Set the foreign entity
+    /// </summary>
+    public void SetForeignEntity()
+    {
+        foreach (var field in Fields)
+        {
+            if (null == Entity)
+            {
+                field.Value.SetContent(null);
+            }
+            else
+            {
+                field.Value.SetContent(Entity.GetField(field.Key)?.GetContent());
+            }
+        }
+    }
+
+    private string GetWhere()
     {
         string where = "";
 
@@ -61,13 +90,6 @@ public class ForeignKey<TF> : ForeignKey where TF : Entity, new()
             where += $"{field.Key} = {field.Value.FormatValue()}";
         }
 
-        // return Database.GetEntities<TF>
-
-        return new TF();
-    }
-
-    public void SetForeignEntity()
-    {
-
+        return where;
     }
 }

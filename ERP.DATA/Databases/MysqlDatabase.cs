@@ -125,4 +125,18 @@ public class MysqlDatabase : Database<MySqlConnection, MySqlCommand, DbDataReade
         }
         return $"'{content:yyyy-MM-dd HH:mm:ss}'";
     }
+
+    public override int? ParseInt(object? value)
+    {
+        if (null == value)
+        {
+            return null;
+        }
+
+        if (int.TryParse(value.ToString()!, out int result))
+        {
+            return result;
+        }
+        throw new Exception("The value is not an integer.");
+    }
 }

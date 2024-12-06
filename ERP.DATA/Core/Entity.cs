@@ -8,7 +8,7 @@ public abstract class Entity
     /// <summary>
     /// Database that this entity belongs to
     /// </summary>
-    public required Database Database { get; set; }
+    public Database Database { get; set; }
 
     /// <summary>
     /// Name of the table in the database
@@ -188,6 +188,16 @@ public abstract class Entity
             Database.HandleException(e, MethodBase.GetCurrentMethod()!.Name);
             return false;
         }
+    }
+
+    /// <summary>
+    /// Get a field by its name
+    /// </summary>
+    /// <param name="fieldName">Field name</param>
+    /// <returns>Field</returns>
+    internal Field? GetField(string fieldName)
+    {
+        return Fields.FirstOrDefault(f => f.ColumnName == fieldName);
     }
 
     /// <summary>
